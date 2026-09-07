@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-test:
+    name: macOS build and tests
+    runs-on: macos-26
+    timeout-minutes: 20
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.6.app/Contents/Developer
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Validate project configuration
+        run: |
+          xcodebuild -version
+          for script in Scripts/*.sh; do bash -n "$script"; done
+          plutil -lint Config/Info.plist Config/Teleprompter.entitlements Teleprompter.xcodeproj/project.pbxproj
+          mkdir -p build/logs
+      - name: Run core and media integration tests
+        run: bash Scripts/test.sh 2>&1 | tee build/logs/tests.log
+      - name: Build local Release app
+        run: bash Scripts/build.sh CODE_SIGN_IDENTITY=- DEVELOPMENT_TEAM= 2>&1 | tee build/logs/build.log
+      - name: Check package integrity
+        working-directory: build/Release
+        run: shasum -a 256 -c SHA256SUMS
+      - name: Upload build diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: build-diagnostics
+          path: build/logs/
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Upload local testing package
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: Teleprompter-local-arm64
+          path: |
+            build/Release/Teleprompter-macOS.zip
+            build/Release/SHA256SUMS
+          retention-days: 14
+          if-no-files-found: error

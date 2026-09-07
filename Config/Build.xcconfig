@@ -1,0 +1,7 @@
+// A clean checkout builds locally without an Apple Developer certificate.
+CODE_SIGN_STYLE = Manual
+CODE_SIGN_IDENTITY = -
+DEVELOPMENT_TEAM =
+
+// Personal signing settings stay outside version control.
+#include? "Local.xcconfig"

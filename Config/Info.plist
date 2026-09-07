@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0"><dict>
+    <key>CFBundleDevelopmentRegion</key><string>en</string>
+    <key>CFBundleDisplayName</key><string>Teleprompter</string>
+    <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
+    <key>CFBundleIdentifier</key><string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+    <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+    <key>CFBundleName</key><string>$(PRODUCT_NAME)</string>
+    <key>CFBundlePackageType</key><string>APPL</string>
+    <key>CFBundleShortVersionString</key><string>1.0.2</string>
+    <key>CFBundleVersion</key><string>3</string>
+    <key>CFBundleIconFile</key><string>AppIcon</string>
+    <key>LSApplicationCategoryType</key><string>public.app-category.video</string>
+    <key>LSMinimumSystemVersion</key><string>$(MACOSX_DEPLOYMENT_TARGET)</string>
+    <key>NSCameraUsageDescription</key><string>Show a camera preview and record your teleprompter takes as MP4 video.</string>
+    <key>NSMicrophoneUsageDescription</key><string>Record your voice and follow your place in the script using on-device speech recognition.</string>
+    <key>NSSpeechRecognitionUsageDescription</key><string>Follow your place in the script. Speech is processed on this Mac.</string>
+    <key>NSCameraUseContinuityCameraDeviceType</key><true/>
+    <key>NSHighResolutionCapable</key><true/>
+    <key>NSSupportsAutomaticGraphicsSwitching</key><true/>
+    <key>NSPrincipalClass</key><string>NSApplication</string>
+</dict></plist>

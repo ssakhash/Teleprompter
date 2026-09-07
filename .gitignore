@@ -1,0 +1,26 @@
+.build/
+build/
+DerivedData/
+.swiftpm/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+
+# Machine-specific signing and credentials
+Config/Local.xcconfig
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.mobileprovision
+*.provisionprofile
+
+# Private recordings and local diagnostics
+*.mp4
+*.mov
+*.aiff
+*.wav
+*.log
+*.crash
+*.ips
