@@ -20,7 +20,7 @@ A native macOS studio with a floating, voice-following reading panel and camera-
 - **Control the take.** Three-second countdown, rehearsal, manual sentence navigation, fixed-speed scrolling, configurable shortcuts, and menu bar controls. Pausing the text leaves recording running.
 - **Keep work local.** Automatic draft saving, selected-folder access, and recovery of playable fragments from interrupted takes. No analytics or cloud recognition.
 
-**Status:** version 1.0.2 is a release candidate. Automated tests and a short built-in camera recording have passed. Thirty-minute camera endurance and annotated human-speech acceptance remain open; see the [validation record](VALIDATION.md).
+**Status:** version 1.0.3 is a release candidate. Automated tests and a short built-in camera recording have passed. Thirty-minute camera endurance and annotated human-speech acceptance remain open; see the [validation record](VALIDATION.md).
 
 ## Requirements
 
@@ -67,6 +67,8 @@ Local builds and CI artifacts are for testing. For Developer ID signing, notariz
 Voice following tolerates nearby restarts, skipped sentences, fillers, and small wording changes. It holds when a phrase is ambiguous or you go off-script. Click a displayed word or use sentence navigation to reposition; use **Return to beginning** for a fresh reading. Completing the script stops the prompter but leaves the camera recording.
 
 Choose **Fixed speed** or **Manual** when voice following is unavailable. Configure text size, panel width, opacity, spacing, reading speed, and keyboard shortcuts in Settings.
+
+The panel and script text use a compact layout at 60% of the original size, including existing saved preferences. At the default settings, the reading surface is 336 points wide with 16.8-point text. Settings shows the actual displayed dimensions. Recording controls retain their legible icon and status sizes.
 
 The floating bubble has a gently rotating multicolor rim and a soft halo that responds to microphone level while following speech. Its text remains stationary apart from script advancement. A paused, idle panel stops its ambient animation, and hidden panels stop animating. Recording retains its separate red status indicator. Reduce Motion disables the moving light and animated scrolling, and Reduce Transparency gives the text an opaque background.
 

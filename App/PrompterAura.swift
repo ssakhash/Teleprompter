@@ -51,13 +51,13 @@ final class AuraView: NSView {
         rim.mask = rimMask
         rimMask.fillColor = nil
         rimMask.strokeColor = NSColor.white.cgColor
-        rimMask.lineWidth = 1.5
+        rimMask.lineWidth = 1.5 * PrompterSizing.scale
         // A real soft shadow, masked outside the bubble, keeps all light off the text.
         shadowSource.backgroundColor = NSColor.black.cgColor
-        shadowSource.cornerRadius = 24
+        shadowSource.cornerRadius = PrompterSizing.cornerRadius
         shadowSource.shadowColor = NSColor(red: 0.49, green: 0.47, blue: 1, alpha: 1).cgColor
         shadowSource.shadowOpacity = 1
-        shadowSource.shadowRadius = 8
+        shadowSource.shadowRadius = 8 * PrompterSizing.scale
         shadowSource.shadowOffset = .zero
         bloom.mask = outsideMask
         outsideMask.fillRule = .evenOdd
@@ -69,16 +69,17 @@ final class AuraView: NSView {
     override func layout() {
         super.layout()
         CATransaction.begin(); CATransaction.setDisableActions(true)
-        let outline = RoundedRectangle(cornerRadius: 24, style: .continuous)
-            .path(in: bounds.insetBy(dx: 12.75, dy: 12.75)).cgPath
+        let inset = 12.75 * PrompterSizing.scale
+        let outline = RoundedRectangle(cornerRadius: PrompterSizing.cornerRadius, style: .continuous)
+            .path(in: bounds.insetBy(dx: inset, dy: inset)).cgPath
         let side = hypot(bounds.width, bounds.height)
         rim.frame = bounds; bloom.frame = bounds
         rimGradient.bounds = CGRect(x: 0, y: 0, width: side, height: side)
         rimGradient.position = CGPoint(x: bounds.midX, y: bounds.midY)
         rimMask.frame = bounds; rimMask.path = outline
         rimMask.contentsScale = window?.backingScaleFactor ?? 2
-        shadowSource.frame = bounds.insetBy(dx: 12.75, dy: 12.75)
-        shadowSource.shadowPath = RoundedRectangle(cornerRadius: 24, style: .continuous).path(in: shadowSource.bounds).cgPath
+        shadowSource.frame = bounds.insetBy(dx: inset, dy: inset)
+        shadowSource.shadowPath = RoundedRectangle(cornerRadius: PrompterSizing.cornerRadius, style: .continuous).path(in: shadowSource.bounds).cgPath
         let outside = CGMutablePath()
         outside.addRect(bounds); outside.addPath(outline)
         outsideMask.frame = bounds; outsideMask.path = outside

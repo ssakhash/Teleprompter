@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 — Release candidate
+
+- Reduce the floating prompter's width, height, and script text to 60% of their previous size, including existing saved preferences.
+- Display the effective text size, panel width, and line spacing in Settings, while preserving readable recording controls.
+
 ## 1.0.2 — Release candidate
 
 - Preserve native camera dimensions and frame timing through preview, countdown, and recording startup.

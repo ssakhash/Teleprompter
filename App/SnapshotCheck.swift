@@ -11,6 +11,11 @@ import TeleprompterKit
         model.trackingStatus = TrackingStatus.listening.rawValue
         model.tokenIndex = 3
         model.microphoneLevel = 0.4
+        if CommandLine.arguments.contains("--narrow-panel") { model.settings.panelWidth = 380 }
+        if CommandLine.arguments.contains("--recording-preview") {
+            model.phase = .recording
+            model.recordingStart = Date().addingTimeInterval(-75)
+        }
         model.ensureOverlay()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             do {

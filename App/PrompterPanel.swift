@@ -2,6 +2,33 @@ import AppKit
 import SwiftUI
 import TeleprompterKit
 
+/// Keep stored dimensions in their original units so existing drafts become
+/// compact without rescaling their saved settings again on each launch.
+enum PrompterSizing {
+    static let scale = 0.6
+    static let padding = 12.0 * scale
+    static let cornerRadius = 24.0 * scale
+    static let controlsHeight = 45.0 * scale
+
+    static func readingSettings(_ settings: UserSettings) -> UserSettings {
+        var compact = settings
+        compact.fontSize *= scale
+        compact.panelWidth *= scale
+        compact.lineSpacing *= scale
+        return compact
+    }
+
+    static func readerHeight(_ settings: UserSettings) -> Double {
+        (settings.fontSize * 1.25 + settings.lineSpacing) * 3
+    }
+
+    static func panelSize(_ settings: UserSettings) -> NSSize {
+        let compact = readingSettings(settings)
+        return NSSize(width: compact.panelWidth + 2 * padding,
+                      height: readerHeight(compact) + 3 * padding + controlsHeight + scale)
+    }
+}
+
 @MainActor final class PrompterPanelController {
     private let panel: NSPanel
     private weak var model: AppModel?
@@ -54,11 +81,10 @@ import TeleprompterKit
     }
     func resize() {
         guard let model else { return }
-        let width = model.settings.panelWidth + 24
-        let height = (model.settings.fontSize * 1.25 + model.settings.lineSpacing) * 3 + 82
+        let size = PrompterSizing.panelSize(model.settings)
         let top = panel.frame.maxY
         let center = panel.frame.midX
-        panel.setFrame(NSRect(x: center - width / 2, y: top - height, width: width, height: height), display: true)
+        panel.setFrame(NSRect(x: center - size.width / 2, y: top - size.height, width: size.width, height: size.height), display: true)
     }
     func resetPosition() {
         guard let screen = NSScreen.screens.first(where: { $0.safeAreaInsets.top > 0 }) ?? NSScreen.main ?? NSScreen.screens.first else { return }
@@ -77,22 +103,23 @@ struct FloatingPrompterView: View {
     private var illuminated: Bool {
         model.following || model.speechLoading || model.phase != .idle
     }
+    private var readingSettings: UserSettings { PrompterSizing.readingSettings(model.settings) }
     var body: some View {
         VStack(spacing: 0) {
-            PrompterReader(script: model.script, index: model.tokenIndex, settings: model.settings, onSeek: model.seek, suppressMotion: reduceMotion)
-                .frame(height: (model.settings.fontSize * 1.25 + model.settings.lineSpacing) * 3)
-                .padding(.top, 12)
+            PrompterReader(script: model.script, index: model.tokenIndex, settings: readingSettings, onSeek: model.seek, suppressMotion: reduceMotion)
+                .frame(height: PrompterSizing.readerHeight(readingSettings))
+                .padding(.top, PrompterSizing.padding)
                 .mask(alignment: .bottom) {
                     LinearGradient(stops: [.init(color: .white, location: 0), .init(color: .white, location: 0.78),
                                            .init(color: .white.opacity(0.3), location: 1)], startPoint: .top, endPoint: .bottom)
                 }
-            Rectangle().fill(LinearGradient(colors: [.clear, .white.opacity(0.14), .clear], startPoint: .leading, endPoint: .trailing)).frame(height: 1)
+            Rectangle().fill(LinearGradient(colors: [.clear, .white.opacity(0.14), .clear], startPoint: .leading, endPoint: .trailing)).frame(height: PrompterSizing.scale)
             controls
         }
-        .frame(width: model.settings.panelWidth)
+        .frame(width: readingSettings.panelWidth)
         .background(surface)
-        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
-        .padding(12)
+        .clipShape(RoundedRectangle(cornerRadius: PrompterSizing.cornerRadius, style: .continuous))
+        .padding(PrompterSizing.padding)
         .overlay {
             PrompterAura(active: illuminated, visible: model.overlayVisible,
                          level: model.following && model.settings.mode == .speech ? model.microphoneLevel : 0,
@@ -105,15 +132,15 @@ struct FloatingPrompterView: View {
         .onChange(of: model.settings.lineSpacing) { model.overlay?.resize() }
     }
     private var surface: some View {
-        RoundedRectangle(cornerRadius: 24, style: .continuous)
+        RoundedRectangle(cornerRadius: PrompterSizing.cornerRadius, style: .continuous)
             .fill(Color(red: 0.025, green: 0.027, blue: 0.045).opacity(reduceTransparency ? 1 : model.settings.opacity))
             .overlay {
-                RoundedRectangle(cornerRadius: 24, style: .continuous)
+                RoundedRectangle(cornerRadius: PrompterSizing.cornerRadius, style: .continuous)
                     .fill(LinearGradient(colors: [Color.white.opacity(0.04), Color.clear], startPoint: .top, endPoint: .bottom))
             }
     }
     private var controls: some View {
-            HStack(spacing: 12) {
+            HStack(spacing: 12 * PrompterSizing.scale) {
                 Button { model.toggleFollowing() } label: { Image(systemName: model.following ? "pause.fill" : "play.fill") }
                     .accessibilityLabel(model.following ? "Pause prompter" : "Start prompter")
                 Button { model.moveSentence(-1) } label: { Image(systemName: "backward.end") }.accessibilityLabel("Previous sentence")
@@ -127,12 +154,12 @@ struct FloatingPrompterView: View {
                 }
                 if model.phase == .recording, let start = model.recordingStart {
                     Circle().fill(.red).frame(width: 6, height: 6)
-                    Text(start, style: .timer).font(.system(size: 10, design: .monospaced)).monospacedDigit()
+                    Text(start, style: .timer).font(.system(size: 10, design: .monospaced)).monospacedDigit().fixedSize()
                 }
                 Button { model.toggleRecording() } label: { Image(systemName: model.phase == .recording ? "stop.circle.fill" : "record.circle").foregroundStyle(.red) }
                     .disabled(model.phase == .finishing || model.configuring).accessibilityLabel(model.phase == .recording ? "Stop recording" : "Record take")
                 Button { model.toggleOverlay() } label: { Image(systemName: "xmark") }.accessibilityLabel("Hide prompter")
-            }.buttonStyle(.plain).font(.system(size: 12)).padding(.horizontal, 16).frame(height: 45)
+            }.buttonStyle(.plain).font(.system(size: 12)).padding(.horizontal, 16 * PrompterSizing.scale).frame(height: PrompterSizing.controlsHeight)
     }
 
 }
@@ -151,7 +178,7 @@ struct PrompterReader: NSViewRepresentable {
         scroll.contentView.wantsLayer = true
         let text = ReadingTextView(frame: .zero)
         text.isEditable = false; text.isSelectable = false; text.drawsBackground = false
-        text.textContainerInset = NSSize(width: 18, height: 0)
+        text.textContainerInset = NSSize(width: 18 * PrompterSizing.scale, height: 0)
         text.isVerticallyResizable = true; text.isHorizontallyResizable = false
         text.autoresizingMask = [.width]
         text.textContainer?.widthTracksTextView = true
@@ -180,7 +207,7 @@ struct PrompterReader: NSViewRepresentable {
                 .font: NSFont.systemFont(ofSize: settings.fontSize, weight: .medium),
                 .foregroundColor: NSColor.white.withAlphaComponent(0.78), .paragraphStyle: paragraph]))
             text.setFrameSize(NSSize(width: width, height: 1))
-            container.containerSize = NSSize(width: width - 36, height: .greatestFiniteMagnitude)
+            container.containerSize = NSSize(width: width - 36 * PrompterSizing.scale, height: .greatestFiniteMagnitude)
             manager.ensureLayout(for: container)
             let height = manager.usedRect(for: container).height + (settings.fontSize * 1.25 + settings.lineSpacing) * 3
             text.setFrameSize(NSSize(width: width, height: height))

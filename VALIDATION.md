@@ -50,6 +50,14 @@ The studio and floating-panel screenshots were regenerated from fixture views an
 
 The Developer ID/notarization script has passed syntax and preflight inspection only. A notarized distribution and clean-machine installation remain unverified and require the release prerequisites in [docs/RELEASING.md](docs/RELEASING.md).
 
+## Version 1.0.3 compact layout — September 17, 2026
+
+On macOS 26.6.2 with Xcode 27.0, the signed Release build, all 32 existing Swift tests, and the three-second synthetic MP4 check passed. The default panel render is 702 × 254 pixels on a 2× display, compared with the previous 1168 × 422 pixels; native window sizing rounds fractional dimensions. The reading surface is 336 points wide and the font is 16.8 points, both 60% of their prior defaults.
+
+Fixture renders confirmed three visible reading lines, word highlighting, and perimeter animation at the compact size. A second render at the minimum 228-point reading width retained every control and the simulated recording timer; the tracking status truncates to fit. These renders use fixture text and do not start camera or microphone capture. Saved preference values retain their original units, with the 60% scale applied only for presentation and reversed when editing size controls, so relaunches do not compound the reduction.
+
+Evidence: `build/compact-panel-build.log`, `build/compact-panel-tests.log`, and `build/compact-recording-preview.png`. No additional physical-camera or endurance acceptance is claimed for this UI change.
+
 ## Reproduce
 
 ```sh

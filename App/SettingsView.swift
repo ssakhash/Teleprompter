@@ -10,9 +10,9 @@ struct PrompterSettingsView: View {
             HStack { Text("Make it your own").font(.title2.weight(.semibold)); Spacer(); Button("Done") { model.registerHotkeys(); dismiss() }.keyboardShortcut(.defaultAction) }
             Form {
                 Section("Reading panel") {
-                    slider("Text size", value: $model.settings.fontSize, range: 20...48, suffix: "pt")
-                    slider("Panel width", value: $model.settings.panelWidth, range: 380...900, suffix: "pt")
-                    slider("Line spacing", value: $model.settings.lineSpacing, range: 2...20, suffix: "pt")
+                    panelSlider("Text size", value: $model.settings.fontSize, range: 20...48)
+                    panelSlider("Panel width", value: $model.settings.panelWidth, range: 380...900)
+                    panelSlider("Line spacing", value: $model.settings.lineSpacing, range: 2...20)
                     slider("Background opacity", value: $model.settings.opacity, range: 0.45...1, suffix: "", scale: 100)
                     Button("Reset panel beneath the notch") { model.ensureOverlay(); model.overlay?.resetPosition() }
                 }
@@ -29,11 +29,16 @@ struct PrompterSettingsView: View {
             }.formStyle(.grouped)
         }.padding(24).frame(width: 560, height: 640).preferredColorScheme(.dark)
     }
+    private func panelSlider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>) -> some View {
+        let scale = PrompterSizing.scale
+        let displayed = Binding<Double>(get: { value.wrappedValue * scale }, set: { value.wrappedValue = $0 / scale })
+        return slider(title, value: displayed, range: (range.lowerBound * scale)...(range.upperBound * scale), suffix: "pt")
+    }
     private func slider(_ title: String, value: Binding<Double>, range: ClosedRange<Double>, suffix: String, scale: Double = 1) -> some View {
         HStack {
             Text(title).frame(width: 135, alignment: .leading)
             Slider(value: value, in: range)
-            Text("\(Int(value.wrappedValue * scale)) \(suffix)").font(.caption.monospacedDigit()).frame(width: 60, alignment: .trailing)
+            Text("\((value.wrappedValue * scale).formatted(.number.precision(.fractionLength(0...1)))) \(suffix)").font(.caption.monospacedDigit()).frame(width: 60, alignment: .trailing)
         }
     }
     private func shortcut(_ title: String, action: String) -> some View {
