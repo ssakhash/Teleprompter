@@ -58,6 +58,18 @@ Fixture renders confirmed three visible reading lines, word highlighting, and pe
 
 Evidence: `build/compact-panel-build.log`, `build/compact-panel-tests.log`, and `build/compact-recording-preview.png`. No additional physical-camera or endurance acceptance is claimed for this UI change.
 
+## Studio Bento layout — September 24, 2026
+
+On macOS 26.6.2 with Xcode 27.0, the signed Release build and package verification passed. All 32 existing Swift tests passed, followed by a synthetic three-second H.264/AAC recording with 90 frames and zero dropped frames. The restricted-shell encoder check required access to macOS media services; it passed when run with that access.
+
+The native Studio fixture matrix passed in Light and Dark Mode at 940 × 650, 1120 × 790, and 1440 × 1000 points, with a second run using reduced transparency and motion. Render inspection covered both ends of the dashboard scroll area, empty and long scripts, long folder and device names, draft recovery, downloads, notices, and each recording phase. The small utility cards stack at the narrow size, and long device names wrap outside the native menu title rather than truncating.
+
+Keyboard input checks confirmed editing while idle and blocked script changes during preparation, countdown, recording, finalization, rehearsal, and speech loading. These checks exposed a focused macOS TextEditor continuing to accept input after being disabled; the Studio now releases editor focus when the script locks. Resizing and appearance changes preserve editor identity, focus, selection, draft text, preview-view identity, and the model's preview session.
+
+The existing floating-panel fixtures also passed: its compositor orbit advanced normally and remained stationary with Reduce Motion. Floating-panel, model, persistence, and media-service source files were not changed. All new UI checks use fixture data and an idle preview session; no physical camera or microphone recording was performed for this layout change.
+
+Evidence: `build/bento-build.log`, `build/bento-tests.log`, `build/bento-studio.log`, `build/bento-accessibility.log`, `build/studio-check-standard/`, `build/studio-check/`, and `build/panel-check/`. The paired Studio renders are published in `docs/images/studio.png` and `docs/images/studio-light.png`.
+
 ## Reproduce
 
 ```sh

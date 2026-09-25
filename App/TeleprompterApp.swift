@@ -13,7 +13,6 @@ import AppKit
         WindowGroup("Teleprompter", id: "studio") {
             StudioView(model: model)
                 .frame(minWidth: 940, minHeight: 650)
-                .preferredColorScheme(.dark)
                 .onAppear {
                     delegate.model = model; model.setUpWindows()
                 }
@@ -49,10 +48,12 @@ import AppKit
         guard CommandLine.arguments.contains("--capture-check") || CommandLine.arguments.contains("--snapshot") else { return }
         let diagnostic = AppModel(isPreview: true)
         model = diagnostic
-        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1120, height: 790),
-                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        let rect = NSRect(x: 0, y: 0, width: 1120, height: 790)
+        let window = CommandLine.arguments.contains("--studio-matrix")
+            ? StudioSnapshotWindow(contentRect: rect, styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+            : NSWindow(contentRect: rect, styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
         window.title = CommandLine.arguments.contains("--capture-check") ? "Teleprompter — capture check" : "Teleprompter"
-        window.contentView = NSHostingView(rootView: StudioView(model: diagnostic).preferredColorScheme(.dark))
+        window.contentView = NSHostingView(rootView: StudioView(model: diagnostic))
         window.center(); window.makeKeyAndOrderFront(nil)
         diagnosticWindow = window
         NSApp.activate()

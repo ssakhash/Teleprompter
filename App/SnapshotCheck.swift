@@ -7,6 +7,10 @@ import TeleprompterKit
         guard let flag = CommandLine.arguments.firstIndex(of: "--snapshot"), CommandLine.arguments.count > flag + 1 else { exit(2) }
         let output = CommandLine.arguments[flag + 1]
         setbuf(stdout, nil)
+        if CommandLine.arguments.contains("--studio-matrix") {
+            StudioSnapshotCheck.run(model: model, window: window, output: output)
+            return
+        }
         model.following = true
         model.trackingStatus = TrackingStatus.listening.rawValue
         model.tokenIndex = 3

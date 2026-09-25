@@ -45,6 +45,10 @@ No speech sample buffers are subscribed until the model is ready. Overflow finis
 
 ## Alignment and presentation
 
+The Studio uses a non-lazy SwiftUI Grid with a persistent editor column and capture column. Five isolated card views bind to the same AppModel; an AnyLayout changes only the storage/speech pair between a row and a stack. Resizing and appearance changes keep the TextEditor, its selection, and the persistent camera preview mounted. The editor releases focus when the script locks because a focused macOS TextEditor can otherwise continue accepting keyboard input after being disabled.
+
+Studio materials, serif headings, and card colors follow the system appearance. Each heading and icon uses a contrasting shade of its card's color family. Reduce Transparency selects opaque card surfaces; the grid has no implicit animations. The separate reading panel retains its existing appearance and behavior. Speech installation remains automatic, and the diagnostics card displays only the status and progress already supplied by AppModel.
+
 The script stores original UTF-16 ranges and sentence IDs. Normalization expands common contractions and numeric spellings; source text remains untouched. A compact display representation collapses whitespace with a separate exact word-range mapping, so blank paragraphs do not consume the three visible reading lines.
 
 The aligner replaces overlapping ASR intervals and rejects revisions older than finalized audio. It retains at most eight intervals, uses at most eight seconds of context and sixteen normalized words, and searches the previous two/next three sentences within 180 source tokens. Weighted edit alignment allows insertions, omissions, and substitutions. Short evidence is restricted to nearby words. Distant or backward movement requires a distinctive finalized multiword phrase or multiple evolving hypotheses; duplicate hypotheses cannot count as additional confirmation.

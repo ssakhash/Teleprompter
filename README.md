@@ -6,7 +6,7 @@ A native macOS studio with a floating, voice-following reading panel and camera-
 
 ![Teleprompter studio with script editor, reading controls, and camera preparation](docs/images/studio.png)
 
-*Studio view with a sample script. The camera is off in this screenshot.*
+*Studio dashboard in Dark Mode with a sample script. The camera is off. [View Light Mode](docs/images/studio-light.png).*
 
 ![Floating reading panel with a highlighted word and multicolor perimeter](docs/images/prompter.png)
 
@@ -14,6 +14,7 @@ A native macOS studio with a floating, voice-following reading panel and camera-
 
 ## Features
 
+- **Work in a responsive studio.** Five Bento cards organize writing, camera setup, recording, storage, and speech assets. Tonal serif headings and native materials follow macOS Light and Dark Mode; smaller windows scroll without compressing the controls.
 - **Read near the camera.** A compact panel sits beneath the MacBook notch, remains visible across desktops, and can be repositioned for an external camera.
 - **Follow your voice.** Local English speech recognition advances through the script, tolerates nearby restarts and skipped sentences, and holds during silence or ambiguous matches.
 - **Record native camera quality.** Built-in and Continuity Camera discovery, camera/microphone selection, and H.264 video with AAC audio in MP4. Profiles prioritize native resolution, then frame rate.
@@ -68,6 +69,8 @@ Voice following tolerates nearby restarts, skipped sentences, fillers, and small
 
 Choose **Fixed speed** or **Manual** when voice following is unavailable. Configure text size, panel width, opacity, spacing, reading speed, and keyboard shortcuts in Settings.
 
+The Recording controls card also exposes reading speed in Fixed speed mode. The script card shows the actual displayed reading width and text size. Storage & privacy contains folder selection and recovery; Speech & assets shows preparation and download progress when voice following needs English speech assets.
+
 The panel and script text use a compact layout at 60% of the original size, including existing saved preferences. At the default settings, the reading surface is 336 points wide with 16.8-point text. Settings shows the actual displayed dimensions. Recording controls retain their legible icon and status sizes.
 
 The floating bubble has a gently rotating multicolor rim and a soft halo that responds to microphone level while following speech. Its text remains stationary apart from script advancement. A paused, idle panel stops its ambient animation, and hidden panels stop animating. Recording retains its separate red status indicator. Reduce Motion disables the moving light and animated scrolling, and Reduce Transparency gives the text an opaque background.
@@ -106,5 +109,7 @@ For an actual recording check, run `bash Scripts/check-recording.sh`. It uses fi
 CI runs the core tests, synthetic MP4 integration check, Release build, signature verification, and package checksum check on macOS 26 with Xcode 26.6. Hosted CI does not replace camera, microphone, or desktop acceptance on physical hardware.
 
 To refresh the screenshots, build the app and run `bash Scripts/screenshots.sh` in a logged-in macOS session. It renders the app's sample views and checks that the perimeter animation advances. It does not use the camera or microphone or modify saved drafts.
+
+Run `bash Scripts/check-studio.sh` to render the Studio in both appearances at 940 × 650, 1120 × 790, and 1440 × 1000 points. It also checks editor focus/selection and preview identity across resizing, sends fixture keyboard input to check script locks, and renders empty, recovery, download, recording, and long-device-name states. Results are written to `build/studio-check/`. Add `--reduced-transparency --reduced-motion` to exercise the accessibility fixture path without changing system preferences. These checks do not start capture or modify saved drafts.
 
 See [VALIDATION.md](VALIDATION.md) for measured results and reproducible speech/recovery checks, [ARCHITECTURE.md](ARCHITECTURE.md) for component boundaries, and [CHANGELOG.md](CHANGELOG.md) for version history.

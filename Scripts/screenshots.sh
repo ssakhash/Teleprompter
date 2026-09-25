@@ -11,7 +11,9 @@ open -n -W --stdout "$logs/result.log" --stderr "$logs/system.log" "$app" --args
 cat "$logs/result.log"
 grep -q '^PASS:' "$logs/result.log"
 mkdir -p docs/images
-cp "$output" docs/images/studio.png
 cp "$output.prompter.png" docs/images/prompter.png
 rm -f "$output" "$output.prompter.png" "$output.prompter-later.png"
+bash Scripts/check-studio.sh
+cp build/studio-check/dark-1440x1000.png docs/images/studio.png
+cp build/studio-check/light-1440x1000.png docs/images/studio-light.png
 echo "Screenshots: docs/images/; render diagnostics: $logs"
